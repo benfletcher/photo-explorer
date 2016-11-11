@@ -98,11 +98,12 @@ function getApiSearchTag(tag, callback) {
     method: 'flickr.photos.search',
     api_key: api_key,
     extras: 'tags,views,url_sq,url_z',  // save an extra API call
-    format: 'json',
-    nojsoncallback: 1
-    per_page: 1,
+    sort: 'interestingness-desc',
+    media: 'photos',
     content_type: 1,
-    media: photos
+    format: 'json',
+    nojsoncallback: 1,
+    per_page: 1
   };
 
   query.tags = imageData[state.anchorImage].tags[0];
