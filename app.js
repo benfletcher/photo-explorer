@@ -98,6 +98,66 @@ function getUrlSizes2 (callback) {
    $.getJSON(baseUrl, query).done(callback);
 }
 
+function getUrlSizes3 (callback) {
+  var index = 0;
+  var photosLength = state.anchorIds.length; 
+
+    var query = {
+      method: 'flickr.photos.getSizes',
+      format: 'json',
+      api_key: 'a823f772bc1e921b92a2658325ceaeb2',
+      nojsoncallback: 1,
+      photo_id: '30263975014'
+    }
+
+   $.getJSON(baseUrl, query).done(callback);
+}
+
+function getUrlSizes4 (callback) {
+  var index = 0;
+  var photosLength = state.anchorIds.length; 
+
+    var query = {
+      method: 'flickr.photos.getSizes',
+      format: 'json',
+      api_key: 'a823f772bc1e921b92a2658325ceaeb2',
+      nojsoncallback: 1,
+      photo_id: '30889829525'
+    }
+
+   $.getJSON(baseUrl, query).done(callback);
+}
+
+function getUrlSizes5 (callback) {
+  var index = 0;
+  var photosLength = state.anchorIds.length; 
+
+    var query = {
+      method: 'flickr.photos.getSizes',
+      format: 'json',
+      api_key: 'a823f772bc1e921b92a2658325ceaeb2',
+      nojsoncallback: 1,
+      photo_id: '30262447373'
+    }
+
+   $.getJSON(baseUrl, query).done(callback);
+}
+
+function getUrlSizes6 (callback) {
+  var index = 0;
+  var photosLength = state.anchorIds.length; 
+
+    var query = {
+      method: 'flickr.photos.getSizes',
+      format: 'json',
+      api_key: 'a823f772bc1e921b92a2658325ceaeb2',
+      nojsoncallback: 1,
+      photo_id: '30896089725'
+    }
+
+   $.getJSON(baseUrl, query).done(callback);
+}
+
 var urlInteresting = "https://api.flickr.com/services/rest/?method=flickr.interestingness.getList&api_key=2641bc2fe50d6802b4c14d2b756e8d3e&format=json&per_page=4";
 
 var urlPhotoInfo = "https://api.flickr.com/services/rest/?method=flickr.photos.getInfo" +
@@ -113,9 +173,10 @@ function displayAnchorImage(state) {
     anchorUrl; 
 
   while (index < state.anchorUrls.length) {
-    if (state.anchorUrls.length === 2) {
+    if (state.anchorUrls.length === 6) {
       anchorUrl = state.anchorUrls[index];
-      results += '<div class="grid-item"><img src="' + anchorUrl + '"/></div>';
+      // results += '<div class="grid-item"><img src="' + anchorUrl + '"/></div>';
+      results += '<div class="grid-item">' + '<a href="' + anchorUrl + '" data-lightbox="image-1" data-title="My caption"><img src="' + anchorUrl + '"/></a>' + '</div>';
       $('.grid').append(results);
       results = "";
     }
@@ -148,7 +209,11 @@ $(function() {
   // getApiPhotoInfo();
 
   getUrlSizes1(saveImgUrls);
-  getUrlSizes2(saveImgUrls)
+  getUrlSizes2(saveImgUrls);
+  getUrlSizes3(saveImgUrls);
+  getUrlSizes4(saveImgUrls);
+  getUrlSizes5(saveImgUrls);
+  getUrlSizes6(saveImgUrls)
 
  // displayAnchorImage(state);
 
@@ -159,8 +224,8 @@ $(function() {
 
 $('.js-enter-button').on('click', function(event) {
   $('.intro-page').addClass('hidden');
-  $('.grid').removeClass('no-show')
   var $grid = $('.grid').imagesLoaded( function() {
+    $('.grid').removeClass('no-show')
   $grid.masonry({
     itemSelector: '.grid-item',
     percentPosition: true,

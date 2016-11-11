@@ -14,8 +14,9 @@ time, mark, audio, video {
 	margin: 0;
 	padding: 0;
 	border: 0;
-	vertical-align: baseline;
+	/*vertical-align: baseline;*/
 }
+
 
 body {
 	background-color: #F2F3F4; 
@@ -36,8 +37,6 @@ h1 {
 	font-size: 40px;
 	padding-top: 10px;
 }
-
-
 
 .js-enter-button {
 	margin-top: 50px;
@@ -72,6 +71,7 @@ h1 {
 
 .hidden {
 	opacity: 0;
+	display: none;
 }
 
 .no-show {
@@ -97,5 +97,6 @@ h1 {
   display: block;
   width: 100%;
 }
+
 
 

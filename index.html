@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="main.css">
     <link href="https://fonts.googleapis.com/css?family=Hind|Cedarville+Cursive|Grand+Hotel|League+Script|Vibur|Roboto+Condensed|Slabo+27px|Raleway" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="lightbox.css">
     <title>Photo Explorer</title>
   </head>
   <body>
@@ -16,17 +17,14 @@
 
     <div class="grid no-show" data-masonry='{ "itemSelector": ".grid-item", "columnWidth": 200 }'>
       <div class="grid-sizer"></div>
-        <div class="grid-item">  
-          <img src=""/>
-        </div>
-        <!-- <div class="grid-item">  
-          <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/82/submerged.jpg"/>
-        </div> -->
+        <div class="grid-item"></div>
     </div>
 
  <!--  <div class='js-anchor-image anchor-image'> 
     <img src=""/>  
   </div> -->
+
+  <!-- <a href="" data-lightbox="image-1" data-title="<a href='https://www.flickr.com/'><i class='fa fa-camera-retro' aria-hidden='true'>  See more</i></a>"><img src=""/></a> -->
 
 <ul>
     <li class='js-thumbnails'>
@@ -44,6 +42,8 @@
   <script src="https://code.jquery.com/jquery-3.1.1.min.js"
     integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
     crossorigin="anonymous"></script>
+    <script src="https://use.fontawesome.com/85c3bcec6f.js"></script>
+     <script type="text/javascript" src='lightbox.js'></script>
     <script src="https://npmcdn.com/imagesloaded@4.1/imagesloaded.pkgd.min.js"></script>
     <script src="https://unpkg.com/masonry-layout@4.1/dist/masonry.pkgd.js"></script>
   <script type="text/javascript" src="app.js">
