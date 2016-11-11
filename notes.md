@@ -1,4 +1,4 @@
-1. get top 4 interestingness photos
+1. get top xx interestingness photos
 -- no search bar
 
 2. tile them on page
@@ -6,6 +6,7 @@
 3. under each anchor photos:
 -- "camera icon" : takes you to more photos from the photographer
 -- 3-5 thumbnail images based on the tags on anchor photo
+---- thumbnail is one of most interesting images
 clicking on any of the items below anchor photo replaces anchor photo with the clicked thumbnail
 
 (?? what does it mean for photographer?)
