@@ -14,8 +14,8 @@
 // app constants
 var baseUrl = "https://api.flickr.com/services/rest/";
 var api_key = "6ea02d3c79fe0ece6a497ea8a10db3eb";
-var thumbSize = "url_sq";
-var anchorSize = "url_z";
+var thumbSize = "url_q";
+var anchorSize = "url_c";
 
 // state object
 var state = {
@@ -155,7 +155,7 @@ function displayImagesOnPage(state) {
     $('.js-thumbnails').empty();
     state.thumbnailsIds.forEach(function(id) {
       var thumbnailUrl = imageData[id].urlThumb;
-      var results = '<li class="thumbnails"><img id="'+ id +'" src="' + thumbnailUrl + '"/></li>';
+      var results = '<li><img class="thumbnails" id="'+ id +'" src="' + thumbnailUrl + '"/></li>';
       $('.js-thumbnails').append(results);
   });
 
@@ -204,6 +204,7 @@ $('.js-thumbnails').on('click', 'img', function (event) {
     getApiSearchTag(saveThumbIds);
 
   });
+
   // listen for clicks on anchor photo
   // listen for clicks on camera icon
   // listen for clicks on thumbnails (1-3...)
