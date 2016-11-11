@@ -57,20 +57,24 @@ function saveCurrentAnchorImg (apiData) {
   console.log(imageData);
   console.log(state);
 
-  
+
   getApiSearchTag(saveThumbIds);
 
 }
 
+// Solution 1: When displaying an image, ensure it is not the same ID as our primary image. If so, use the next one in line.
+//
+
 function saveThumbIds(apiData) {
   // console.log(apiData);
-  state.thumbnailsIds.push(apiData.photos.photo[0].id);
 
   var photo = apiData.photos.photo[0];
 
   if (imageData[photo.id]) {
     photo = apiData.photos.photo[1];
   }
+
+  state.thumbnailsIds.push(photo.id);
 
   imageData[photo.id] = {
     ownerId: photo.owner,
@@ -103,7 +107,7 @@ function getApiInterestingness(callback) {
   };
 
   $.getJSON(baseUrl, query, callback); // .done(cb)
-  
+
   // code from Chris re: future approach:
   //$.getJSON(baseUrl, query).done(callback).done(displayAnchorImage);
 }
@@ -121,7 +125,22 @@ function getApiSearchTag(callback) {
     per_page: 10
   };
 
-  for (var i = 0; i < 3 && i < imageData[state.anchorImage].tags.length; i++) {
+  // Gather our related images.
+  // We have: our anchor image.
+  // We want: three unique tags from the anchor image.
+  //   And we want to skip tags that only return one image.
+  // In order to: Get related images for each tag.
+  //   And filter out any images that are the same as our anchor image.
+  //   And store the remaining images in state and image data object.
+
+  // var anchorImage;
+  // var tags = extractTags(anchorImage)
+  // var relatedImages = getRelatedImagesFromTags(tags)
+  // state.imageIds = relatedImages.ids
+
+  // when state.thumbnailsIds has 3 IDs we are done here...
+  // also need to stop if we run out of tags (unlikely)
+  for (var i = 0; i < 6 && i < imageData[state.anchorImage].tags.length; i++) {
     query.tags = imageData[state.anchorImage].tags[i];
     console.log(query.tags);
     $.getJSON(baseUrl, query, callback);
@@ -171,7 +190,7 @@ $(function() {
  $('.js-enter-button').on('click', function(event) {
     $('.intro-page').addClass('hidden');
     $('.js-anchor-image').removeClass('hidden');
-    $('.js-thumbnails').removeClass('hidden'); 
+    $('.js-thumbnails').removeClass('hidden');
     $('.camera').removeClass('hidden');
  })
 
