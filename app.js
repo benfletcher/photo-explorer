@@ -11,20 +11,17 @@
 // <, >  scroll through more images from current tag Search
 // o  open new tab on flickr site of current image
 
+
 // state object
 var state = {
   anchorImage: "",
-  tumbnailsIds: [ ],
-  priorAnchors: [ ],
-//  anchorUrls: { },
-//  imageTags: { },
-//  photogs: { }
+  thumbnailsIds: [ ],
+  priorAnchors: [ ]
 };
 
 var imageData = {
   "123456": {
     ownerId: "",
-//    ownername: "",  // probably don't need
     title: "",
     tags: [ ],
     urlAnchor: "",
@@ -38,21 +35,33 @@ function saveCurrentAnchorImg (apiData) {
   // grabs a random photo based on # of photos returned
   var rand = Math.ceil(Math.random() * apiData.photos.photo.length);
 
-  state.anchorImage = apiData.photos.photo[rand].id;
-}
+  var photo = apiData.photos.photo[rand];
+  state.anchorImage = photo.id;
 
-function saveImgUrls (apiData) {
-    state.thumbnailUrls[state.anchorImage] = apiData.sizes.size[0].source;
-    state.anchorUrls[state.anchorImage] = apiData.sizes.size[7].source;
+  if (imageData[photo.id]) {
+    return; // image already in DB
+  }
+
+  imageData[photo.id] = {
+    ownerId: photo.owner,
+    title: photo.title,
+    tags: photo.tags.split(" "),
+    urlAnchor: photo.url_z,
+    urlThumb: photo.url_sq,
+  };
+  console.log(imageData);
+  console.log(state);
+
     displayAnchorImage(state);
 }
 
-function saveImageInfo(apiData) {
-  var tags = [ ];
-  apiData.photo.tags.tag.forEach(function (imgTag) {
-    tags.push(imgTag._content);
-  });
+// function saveImgUrls (apiData) {
+//     state.thumbnailUrls[state.anchorImage] = apiData.sizes.size[0].source;
+//     state.anchorUrls[state.anchorImage] = apiData.sizes.size[7].source;
+//     displayAnchorImage(state);
+// }
 
+function saveImageInfo(apiData) {
   var photo = apiData.photo;
 
   imageData.imageInfo[state.currId] = {
@@ -73,30 +82,32 @@ function saveImageInfo(apiData) {
   //function that saves thumbnails
 
 var baseUrl = "https://api.flickr.com/services/rest/";
+var api_key = "6ea02d3c79fe0ece6a497ea8a10db3eb";
 
 //API calls
 
 function getApiInterestingness(callback) {
   var query = {
     method: 'flickr.interestingness.getList',
+    extras: 'tags,views,url_sq,url_z',
     format: 'json',
-    api_key: '2641bc2fe50d6802b4c14d2b756e8d3e',
-    per_page: 50,
+    api_key: api_key,
+    per_page: 15,
     nojsoncallback: 1
   }
 
-  $.getJSON(baseUrl, query).done(callback);
+  $.getJSON(baseUrl, query, callback);
 
 }
 
 function getApiPhotoInfo (callback) {
-  if (imageData.imageInfo[state.currId]) {
+  if (imageData[state.currId]) {
     return;    // already have data, so skip API call
   }
 
    var query = {
     method: 'flickr.photos.getInfo',
-    api_key: '2641bc2fe50d6802b4c14d2b756e8d3e',
+    api_key: api_key,
     photo_id: state.anchorImage,
     format: 'json',
     nojsoncallback: 1
@@ -112,7 +123,7 @@ function getApiPhotoInfo (callback) {
 function getApiPhotoTags (callback) {
    var query = {
     method: 'flickr.tags.getListPhoto',
-    api_key: '2641bc2fe50d6802b4c14d2b756e8d3e',
+    api_key: api_key,
     photo_id: state.anchorImage,
     format: 'json',
     nojsoncallback: 1
@@ -125,7 +136,7 @@ function getUrlSizes (callback) {
    var query = {
     method: 'flickr.photos.getSizes',
     format: 'json',
-    api_key: '2641bc2fe50d6802b4c14d2b756e8d3e',
+    api_key: api_key,
     nojsoncallback: 1,
     photo_id: state.anchorImage
   }
@@ -135,7 +146,8 @@ function getUrlSizes (callback) {
 
 // functions that render state
 function displayAnchorImage(state) {
-  var anchorUrl = state.anchorUrls[state.anchorImage];
+  debugger;
+  var anchorUrl = imageData[state.anchorImage].urlAnchor;
   $('.js-anchor-image > img').attr('src', anchorUrl);
   // var elem = $('.js-anchor-image').children().clone();
   // elem.find('img').attr('src', anchorUrl);
@@ -163,10 +175,11 @@ function displayAnchorImage(state) {
 
 $(function() {
   getApiInterestingness(saveCurrentAnchorImg);
-  getApiPhotoInfo(saveImageInfo);
-  getUrlSizes(saveImgUrls);
+  // displayAnchorImage(state);
+  // getApiPhotoInfo(saveImageInfo);
+  // getUrlSizes(saveImgUrls);
 
- // displayAnchorImage(state);
+  // displayAnchorImage(state);
 
 
 });
