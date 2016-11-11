@@ -15,7 +15,6 @@ time, mark, audio, video {
 	padding: 0;
 	border: 0;
 	vertical-align: baseline;
-	font-family: 'Hind', sans-serif;
 }
 
 body {
@@ -28,15 +27,21 @@ li {
 }
 
 p {
-	padding-top: 40px;
- 
+	padding-top: 30px;
+	font-family: 'Hind', sans-serif;
+}
+
+h1 {
+	font-family: 'Roboto Condensed', sans-serif;
+	font-size: 40px;
+	padding-top: 10px;
 }
 
 .js-enter-button {
 	margin-top: 50px;
 	height: 30px;
 	width: 70px;
-	border: solid #D7DBDD 1px;
+	border: solid #979A9A 1px;
 	border-radius: 3px;
 	background-color: white;
 	font-size: 12px;
