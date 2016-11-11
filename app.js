@@ -172,6 +172,12 @@ $(function() {
 });
 // events
 
+ $('.js-enter-button').on('click', function(event) {
+    $('.intro-page').addClass('hidden');
+    $('.js-anchor-image').removeClass('hidden');
+    $('.js-thumbnails').removeClass('hidden'); 
+ })
+
   // listen for clicks on anchor photo
   // listen for clicks on camera icon
   // listen for clicks on thumbnails (1-3...)

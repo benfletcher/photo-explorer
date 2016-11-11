@@ -19,12 +19,70 @@ time, mark, audio, video {
 	vertical-align: baseline;
 }
 
+ body {
+  	background-color: #F2F3F4; 
+}
+
 li {
 	list-style-type: none; 
 }
+
+ p {
+ 	padding-top: 30px;
+ 	font-family: 'Hind', sans-serif;
+ }
+ 
+ h1 {
+ 	font-family: 'Roboto Condensed', sans-serif;
+ 	font-size: 40px;
+  	padding-top: 10px;
+  }
+
+
+  ul {
+  	margin-left: 500px;
+    padding: 0;
+    width: 60px;
+    display: inline;
+  }
+
+  .thumbnails {
+  	padding: 5px; 
+  	display: inline-block; 
+  }
+
+ .js-enter-button {
+  	margin-top: 50px;
+  	height: 30px;
+ 	width: 70px;
+ 	border: solid #979A9A 1px;
+ 	border-radius: 3px;
+ 	background-color: white;
+ 	font-size: 12px;
+ }
+
+  .intro-page {
+ 	text-align: center;
+ 	width: 500px;
+ 	height: 300px;
+ 	margin-left: -250px;
+ 	margin-top: -150px;
+ 	background-color: white;
+ 	position: fixed;
+ 	top: 50%;
+ 	left: 50%;
+ 	opacity: 0.9;
+ 	transition: opacity 500ms ease;
+ 	border-radius: 4px;
+ }
 
 .js-anchor-image {
 	text-align: center;
 	padding-top: 30px;
 
 }
+
+ .hidden {
+  	opacity: 0;
+ 	display: none;
+  }
