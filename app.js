@@ -1,12 +1,3 @@
-//                   ||
-//      pos0         ||      pos1
-//                   ||
-// cam th1 th2 th3   ||
-// =======================================
-//
-//      pos2         ||      pos3
-//
-
 
 // state object
 var state = {
@@ -18,7 +9,7 @@ var state = {
   
 };
 
-//state.thumbnailURLs[thumbnailIds[0]] = url;
+
 // other info - where to store this?
 // - url to the photo itself
 // -
@@ -38,8 +29,6 @@ function saveImgUrls (apiData) {
     displayAnchorImage(state);
 }
 
-
-  //function savesCurrentAnchorImg
   //function saves priorAnchorImg
     //takes anchorImage and reassigns it to priorAnchor
 
@@ -53,7 +42,7 @@ function getApiInterestingness(callback) {
   var query = {
     method: 'flickr.interestingness.getList',
     format: 'json',
-    api_key: '2641bc2fe50d6802b4c14d2b756e8d3e',
+    api_key: 'a823f772bc1e921b92a2658325ceaeb2',
     per_page: 1,
     nojsoncallback: 1
   }
@@ -66,7 +55,7 @@ function getApiPhotoInfo (callback) {
    var query = {
     method: 'flickr.photos.getInfo',
     format: 'json',
-    api_key: '2641bc2fe50d6802b4c14d2b756e8d3e'
+    api_key: 'a823f772bc1e921b92a2658325ceaeb2'
   }
 
   $.getJSON(baseUrl, query).done(callback);
@@ -76,7 +65,7 @@ function getUrlSizes (callback) {
    var query = {
     method: 'flickr.photos.getSizes',
     format: 'json',
-    api_key: '2641bc2fe50d6802b4c14d2b756e8d3e',
+    api_key: 'a823f772bc1e921b92a2658325ceaeb2',
     nojsoncallback: 1,
     photo_id: state.anchorImage
   }
@@ -135,6 +124,9 @@ $(function() {
 });
 // events
 
+$('.js-enter-button').on('click', function(event) {
+  $('.intro-page').addClass('hidden');
+})
   // listen for clicks on anchor photo
   // listen for clicks on camera icon
   // listen for clicks on thumbnails (1-3...)
