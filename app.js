@@ -152,11 +152,13 @@ function getApiSearchTag(callback) {
 function displayImagesOnPage(state) {
     var anchorUrl = imageData[state.anchorImage].urlAnchor;
     $('.js-anchor-image > img').attr('src', anchorUrl);
+    $('.js-thumbnails').empty();
     state.thumbnailsIds.forEach(function(id) {
       var thumbnailUrl = imageData[id].urlThumb;
-      var results = '<li class="thumbnails"><img src="' + thumbnailUrl + '"/></li>';
+      var results = '<li class="thumbnails"><img id="'+ id +'" src="' + thumbnailUrl + '"/></li>';
       $('.js-thumbnails').append(results);
   });
+
 
 }
 
@@ -194,6 +196,14 @@ $(function() {
     $('.camera').removeClass('hidden');
  })
 
+
+$('.js-thumbnails').on('click', 'img', function (event) {
+    var id = $(this).attr('id'); 
+    state.anchorImage = id; 
+    state.thumbnailsIds = []; 
+    getApiSearchTag(saveThumbIds);
+
+  });
   // listen for clicks on anchor photo
   // listen for clicks on camera icon
   // listen for clicks on thumbnails (1-3...)
