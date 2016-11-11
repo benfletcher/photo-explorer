@@ -1,11 +1,10 @@
 
 // state object
 var state = {
-  anchorImage: "30580825110",
+  anchorIds: [],
+  anchorUrls: [], 
   thumbnailsIds: [],
-  priorAnchor: "324324234234",
-  thumbnailUrls: {},
-  anchorUrls: {}
+  thumbnailUrls: []
   
 };
 
@@ -18,14 +17,22 @@ var state = {
 
 // functions that modify state
 
-function saveCurrentAnchorImg (apiData) {
-    state.anchorImage = apiData.photos.photo[0].id;
-    
+function saveAnchorIds (apiData) {
+    var photosLength = apiData.photos.photo.length;
+    var index = 0; 
+    var ids; 
+
+    while (index < photosLength){
+      ids = apiData.photos.photo[index].id; 
+      state.anchorIds.push(ids); 
+      index++; 
+    }
 }
 
 function saveImgUrls (apiData) {
-    state.thumbnailUrls[state.anchorImage] = apiData.sizes.size[0].source;
-    state.anchorUrls[state.anchorImage] = apiData.sizes.size[7].source;
+  // console.log(apiData)
+    state.anchorUrls.push(apiData.sizes.size[7].source);
+    console.log(state.anchorUrls);
     displayAnchorImage(state);
 }
 
@@ -43,7 +50,7 @@ function getApiInterestingness(callback) {
     method: 'flickr.interestingness.getList',
     format: 'json',
     api_key: 'a823f772bc1e921b92a2658325ceaeb2',
-    per_page: 1,
+    per_page: 50,
     nojsoncallback: 1
   }
 
@@ -61,17 +68,34 @@ function getApiPhotoInfo (callback) {
   $.getJSON(baseUrl, query).done(callback);
 }
 
-function getUrlSizes (callback) {
-   var query = {
-    method: 'flickr.photos.getSizes',
-    format: 'json',
-    api_key: 'a823f772bc1e921b92a2658325ceaeb2',
-    nojsoncallback: 1,
-    photo_id: state.anchorImage
-  }
-  
-  $.getJSON(baseUrl, query).done(callback);
+function getUrlSizes1 (callback) {
+  var index = 0;
+  var photosLength = state.anchorIds.length; 
 
+    var query = {
+      method: 'flickr.photos.getSizes',
+      format: 'json',
+      api_key: 'a823f772bc1e921b92a2658325ceaeb2',
+      nojsoncallback: 1,
+      photo_id: '30262244943'
+    }
+
+   $.getJSON(baseUrl, query).done(callback);
+}
+
+function getUrlSizes2 (callback) {
+  var index = 0;
+  var photosLength = state.anchorIds.length; 
+
+    var query = {
+      method: 'flickr.photos.getSizes',
+      format: 'json',
+      api_key: 'a823f772bc1e921b92a2658325ceaeb2',
+      nojsoncallback: 1,
+      photo_id: '30859113426'
+    }
+
+   $.getJSON(baseUrl, query).done(callback);
 }
 
 var urlInteresting = "https://api.flickr.com/services/rest/?method=flickr.interestingness.getList&api_key=2641bc2fe50d6802b4c14d2b756e8d3e&format=json&per_page=4";
@@ -80,16 +104,23 @@ var urlPhotoInfo = "https://api.flickr.com/services/rest/?method=flickr.photos.g
   "&api_key=2641bc2fe50d6802b4c14d2b756e8d3e&photo_id=30580825110&format=json&nojsoncallback=1";
 
 var urlGetSizes = "https://api.flickr.com/services/rest/?method=flickr.photos.getSizes" +
-  "&api_key=2641bc2fe50d6802b4c14d2b756e8d3e&photo_id=30580825110&format=json&nojsoncallback=1";
+  "&api_key=a823f772bc1e921b92a2658325ceaeb2&photo_id=30580825110&format=json&nojsoncallback=1";
 
 // functions that render state
 function displayAnchorImage(state) {
-  var anchorUrl = state.anchorUrls[state.anchorImage];
-  $('.js-anchor-image > img').attr('src', anchorUrl);
-  // var elem = $('.js-anchor-image').children().clone();
-  // elem.find('img').attr('src', anchorUrl);
-  // $('.js-anchor-image').append(elem);
-  
+  var index = 0,
+    results = "",
+    anchorUrl; 
+
+  while (index < state.anchorUrls.length) {
+    if (state.anchorUrls.length === 2) {
+      anchorUrl = state.anchorUrls[index];
+      results += '<div class="grid-item"><img src="' + anchorUrl + '"/></div>';
+      $('.grid').append(results);
+      results = "";
+    }
+    index++; 
+  }
 }
 
 
@@ -113,10 +144,11 @@ function displayAnchorImage(state) {
   // function allowing clicking on camera icon to grab photog photos
 
 $(function() {
-  getApiInterestingness(saveCurrentAnchorImg);
+  getApiInterestingness(saveAnchorIds);
   // getApiPhotoInfo();
 
-  getUrlSizes(saveImgUrls);
+  getUrlSizes1(saveImgUrls);
+  getUrlSizes2(saveImgUrls)
 
  // displayAnchorImage(state);
 
@@ -128,12 +160,6 @@ $(function() {
 $('.js-enter-button').on('click', function(event) {
   $('.intro-page').addClass('hidden');
   $('.grid').removeClass('no-show')
-  //  $('.grid').masonry({
-  //     itemSelector: '.grid-item',
-  //     columnWidth: 200,
-  //     percentPosition: true
-  // });
-
   var $grid = $('.grid').imagesLoaded( function() {
   $grid.masonry({
     itemSelector: '.grid-item',
