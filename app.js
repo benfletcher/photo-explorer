@@ -58,7 +58,6 @@ function saveCurrentAnchorImg (apiData) {
   console.log(state);
 
   displayAnchorImage(state);
-
   getApiSearchTag(saveThumbIds);
 
 }
@@ -66,9 +65,26 @@ function saveCurrentAnchorImg (apiData) {
 function saveThumbIds(apiData) {
   // console.log(apiData);
   state.thumbnailsIds.push(apiData.photos.photo[0].id);
-  console.log('render thumbnail called');
-  console.log('state', state);
-  console.log('imageData', imageData);
+
+  var photo = apiData.photos.photo[0];
+
+  if (imageData[photo.id]) {
+    photo = apiData.photos.photo[1];
+  }
+
+  imageData[photo.id] = {
+    ownerId: photo.owner,
+    title: photo.title,
+    tags: photo.tags.split(" "),
+    urlAnchor: photo[anchorSize],
+    urlThumb: photo[thumbSize]
+  };
+
+
+  if (state.thumbnailsIds.length === 3) {
+      displayThumbnailsImage(state);
+  }
+
 }
 
 //API calls
@@ -102,7 +118,7 @@ function getApiSearchTag(callback) {
     content_type: 1,
     format: 'json',
     nojsoncallback: 1,
-    per_page: 1
+    per_page: 10
   };
 
   for (var i = 0; i < 3 && i < imageData[state.anchorImage].tags.length; i++) {
@@ -121,6 +137,15 @@ function displayAnchorImage(state) {
   // elem.find('img').attr('src', anchorUrl);
   // $('.js-anchor-image').append(elem);
 
+}
+
+function displayThumbnailsImage(state) {
+  console.log(imageData);
+  state.thumbnailsIds.forEach(function(id) {
+    var thumbnailUrl = imageData[id].urlThumb;
+    var results = '<li class="thumbnails"><img src="' + thumbnailUrl + '"/></li>';
+    $('.js-thumbnails').append(results);
+  });
 }
 
 //   var resultElement = '';

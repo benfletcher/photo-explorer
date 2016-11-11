@@ -22,3 +22,9 @@ time, mark, audio, video {
 li {
 	list-style-type: none; 
 }
+
+.js-anchor-image {
+	text-align: center;
+	padding-top: 30px;
+
+}
