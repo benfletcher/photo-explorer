@@ -31,6 +31,9 @@ function saveAnchorIds (apiData) {
 
 function saveImgUrls (apiData) {
   // console.log(apiData)
+
+  console.log(apiData.sizes.size[7].source)
+
     state.anchorUrls.push(apiData.sizes.size[7].source);
     console.log(state.anchorUrls);
     displayAnchorImage(state);
@@ -208,13 +211,6 @@ $(function() {
   getApiInterestingness(saveAnchorIds);
   // getApiPhotoInfo();
 
-  getUrlSizes1(saveImgUrls);
-  getUrlSizes2(saveImgUrls);
-  getUrlSizes3(saveImgUrls);
-  getUrlSizes4(saveImgUrls);
-  getUrlSizes5(saveImgUrls);
-  getUrlSizes6(saveImgUrls)
-
  // displayAnchorImage(state);
 
 
@@ -224,15 +220,22 @@ $(function() {
 
 $('.js-enter-button').on('click', function(event) {
   $('.intro-page').addClass('hidden');
+
   var $grid = $('.grid').imagesLoaded( function() {
     $('.grid').removeClass('no-show')
-  $grid.masonry({
-    itemSelector: '.grid-item',
-    percentPosition: true,
-    columnWidth: '.grid-sizer'
-  }); 
+    $grid.masonry({
+      itemSelector: '.grid-item',
+      percentPosition: true,
+      columnWidth: '.grid-sizer'
+    }); 
+  });
+  getUrlSizes1(saveImgUrls);
+  getUrlSizes2(saveImgUrls);
+  getUrlSizes3(saveImgUrls);
+  getUrlSizes4(saveImgUrls);
+  getUrlSizes5(saveImgUrls);
+  getUrlSizes6(saveImgUrls);
 });
-})
   // listen for clicks on anchor photo
   // listen for clicks on camera icon
   // listen for clicks on thumbnails (1-3...)
