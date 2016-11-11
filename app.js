@@ -57,7 +57,7 @@ function saveCurrentAnchorImg (apiData) {
   console.log(imageData);
   console.log(state);
 
-  displayAnchorImage(state);
+  
   getApiSearchTag(saveThumbIds);
 
 }
@@ -82,7 +82,7 @@ function saveThumbIds(apiData) {
 
 
   if (state.thumbnailsIds.length === 3) {
-      displayThumbnailsImage(state);
+      displayImagesOnPage(state);
   }
 
 }
@@ -130,23 +130,19 @@ function getApiSearchTag(callback) {
 }
 
 // functions that render state
-function displayAnchorImage(state) {
-  var anchorUrl = imageData[state.anchorImage].urlAnchor;
-  $('.js-anchor-image > img').attr('src', anchorUrl);
-  // var elem = $('.js-anchor-image').children().clone();
-  // elem.find('img').attr('src', anchorUrl);
-  // $('.js-anchor-image').append(elem);
-
-}
-
-function displayThumbnailsImage(state) {
-  console.log(imageData);
-  state.thumbnailsIds.forEach(function(id) {
-    var thumbnailUrl = imageData[id].urlThumb;
-    var results = '<li class="thumbnails"><img src="' + thumbnailUrl + '"/></li>';
-    $('.js-thumbnails').append(results);
+function displayImagesOnPage(state) {
+    var anchorUrl = imageData[state.anchorImage].urlAnchor;
+    $('.js-anchor-image > img').attr('src', anchorUrl);
+    state.thumbnailsIds.forEach(function(id) {
+      var thumbnailUrl = imageData[id].urlThumb;
+      var results = '<li class="thumbnails"><img src="' + thumbnailUrl + '"/></li>';
+      $('.js-thumbnails').append(results);
   });
+
 }
+
+
+
 
 //   var resultElement = '';
 //   if (data.Search) {
