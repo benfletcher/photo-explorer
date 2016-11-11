@@ -121,11 +121,26 @@ $(function() {
  // displayAnchorImage(state);
 
 
+
 });
 // events
 
 $('.js-enter-button').on('click', function(event) {
   $('.intro-page').addClass('hidden');
+  $('.grid').removeClass('no-show')
+  //  $('.grid').masonry({
+  //     itemSelector: '.grid-item',
+  //     columnWidth: 200,
+  //     percentPosition: true
+  // });
+
+  var $grid = $('.grid').imagesLoaded( function() {
+  $grid.masonry({
+    itemSelector: '.grid-item',
+    percentPosition: true,
+    columnWidth: '.grid-sizer'
+  }); 
+});
 })
   // listen for clicks on anchor photo
   // listen for clicks on camera icon
