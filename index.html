@@ -1,32 +1,39 @@
 <!DOCTYPE html>
+<!-- "This product uses the Flickr API but is not endorsed or certified by Flickr." -->
 <html>
   <head>
     <meta charset="utf-8">
+     <link href="https://fonts.googleapis.com/css?family=Hind|Cedarville+Cursive|Grand+Hotel|League+Script|Vibur|Roboto+Condensed|Slabo+27px|Raleway" rel="stylesheet">
     <link rel="stylesheet" href="main.css">
     <title>Photo Explorer</title>
   </head>
   <body>
 
-  <div class='js-anchor-image'> 
-    <img src=""/>  
+ <div class='intro-page'>
+    <h1>The Rabbit Hole</h1>
+    <p>Need a quick break from reality? Get lost down a rabbit hole. </br>The thumbnails are related to the main image. </br>Click on them and see where it takes you.</p></br>
+    <p class="disclaimer">This product uses the Flickr API but is not endorsed or certified by Flickr.</p>
+    <button class='js-enter-button'>Got it.</button>
+ </div>
+
+<div class="container">
+  <div class="js-anchor-image hidden">
+    <img class="anchor" src=""/>
   </div>
+  <div class="thumbnail-container">
+    <ul class="js-thumbnails hidden"></ul>
+  </div>
+  <div>
+    <i class="fa fa-camera-retro fa-3x hidden camera" aria-hidden="true"></i>
+  </div>
+</div>
 
-<ul>
-    <li class='js-thumbnails'>
-    </li>
-
-   <li class='js-thumbnails'>
-   </li>
-
-    <li class='js-thumbnails'>
-    </li>
-
-</ul>
 
   </body>
   <script src="https://code.jquery.com/jquery-3.1.1.min.js"
     integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
     crossorigin="anonymous"></script>
+    <script src="https://use.fontawesome.com/85c3bcec6f.js"></script>
   <script type="text/javascript" src="app.js">
   </script>
 </html>

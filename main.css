@@ -19,6 +19,99 @@ time, mark, audio, video {
 	vertical-align: baseline;
 }
 
+ body {
+  	background-color: #273746;  
+}
+
 li {
 	list-style-type: none; 
 }
+
+.anchor {
+  border: solid 5px white;
+  border-radius: 5px;
+}
+
+img:hover {
+  border-color: lightgray;
+}
+
+ p {
+ 	padding-top: 5px;
+ 	font-family: 'Hind', sans-serif;
+ }
+ 
+ h1 {
+ 	font-family: 'Cedarville Cursive', cursive;
+ 	font-size: 50px;
+  	padding-top: 10px;
+  }
+
+
+  ul {
+    padding: 0;
+    width: 100%;
+    display: inline;
+  }
+
+  li {
+    padding: 20px; 
+    display: inline-block;
+  }
+
+  .thumbnails {
+    border: 3px solid white;
+    border-radius: 5px;
+  }
+
+ .js-enter-button {
+  	margin-top: 30px;
+  	height: 30px;
+   	width: 70px;
+   	border: solid #979A9A 1px;
+   	border-radius: 3px;
+   	background-color: white;
+   	font-size: 12px;
+ }
+
+  .intro-page {
+   	text-align: center;
+   	width: 500px;
+   	height: 300px;
+   	margin-left: -250px;
+   	margin-top: -150px;
+   	background-color: white;
+   	position: fixed;
+   	top: 50%;
+   	left: 50%;
+   	opacity: 0.9;
+   	transition: opacity 500ms ease;
+   	border-radius: 4px;
+    padding: 20px;
+ }
+
+.js-anchor-image {
+/*	text-align: center;*/
+	padding-top: 30px;
+}
+
+.container {
+  text-align: center;
+}
+
+ .hidden {
+    opacity: 0;
+   	display: none;
+  }
+
+  .camera {
+    padding: 20px;
+    text-align: center;
+    color: white;
+
+  }
+
+  .disclaimer {
+    color: darkgray;
+    font-size: .8em;
+  }
