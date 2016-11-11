@@ -529,3 +529,9 @@ $(function() {
   // listen for clicks on thumbnails (1-3...)
   // listen for mouseover on icons (might be multiple)
   // listen for back button
+
+
+
+
+// Use for responsive display
+// <div class="col-xs-12 col-sm-6">
