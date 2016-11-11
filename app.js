@@ -176,6 +176,7 @@ $(function() {
     $('.intro-page').addClass('hidden');
     $('.js-anchor-image').removeClass('hidden');
     $('.js-thumbnails').removeClass('hidden'); 
+    $('.camera').removeClass('hidden');
  })
 
   // listen for clicks on anchor photo
