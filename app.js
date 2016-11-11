@@ -52,7 +52,7 @@ function saveCurrentAnchorImg (apiData) {
   console.log(imageData);
   console.log(state);
 
-    displayAnchorImage(state);
+  displayAnchorImage(state);
 }
 
 // function saveImgUrls (apiData) {
@@ -75,37 +75,47 @@ function saveImageInfo(apiData) {
 
 }
 
-  //function savesCurrentAnchorImg
-  //function saves priorAnchorImg
-    //takes anchorImage and reassigns it to priorAnchor
-
-  //function that saves thumbnails
+//API calls
 
 var baseUrl = "https://api.flickr.com/services/rest/";
 var api_key = "6ea02d3c79fe0ece6a497ea8a10db3eb";
 
-//API calls
-
 function getApiInterestingness(callback) {
   var query = {
     method: 'flickr.interestingness.getList',
-    extras: 'tags,views,url_sq,url_z',
+    extras: 'tags,views,url_sq,url_z',  // save an extra API call
     format: 'json',
     api_key: api_key,
-    per_page: 15,
+    per_page: 10,  // grab a random 1 of all returned
     nojsoncallback: 1
-  }
+  };
 
   $.getJSON(baseUrl, query, callback);
+}
 
+function getApiSearchTag(tag, callback) {
+  var query = {
+    method: 'flickr.photos.search',
+    api_key: api_key,
+    extras: 'tags,views,url_sq,url_z',  // save an extra API call
+    format: 'json',
+    nojsoncallback: 1
+    per_page: 1,
+    content_type: 1,
+    media: photos
+  };
+
+  query.tags = imageData[state.anchorImage].tags[0];
+
+  $.getJSON(baseUrl, query, callback);
 }
 
 function getApiPhotoInfo (callback) {
   if (imageData[state.currId]) {
-    return;    // already have data, so skip API call
+    return;    // we've already seen this photo, so skip API call
   }
 
-   var query = {
+  var query = {
     method: 'flickr.photos.getInfo',
     api_key: api_key,
     photo_id: state.anchorImage,
@@ -146,7 +156,6 @@ function getUrlSizes (callback) {
 
 // functions that render state
 function displayAnchorImage(state) {
-  debugger;
   var anchorUrl = imageData[state.anchorImage].urlAnchor;
   $('.js-anchor-image > img').attr('src', anchorUrl);
   // var elem = $('.js-anchor-image').children().clone();
