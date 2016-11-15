@@ -1,3 +1,4 @@
+"use strict";
 //  ___________________
 // | <--             o |
 // |                   |
@@ -11,202 +12,208 @@
 // <, >  scroll through more images from current tag Search
 // o  open new tab on flickr site of current image
 
-// app constants
-var baseUrl = "https://api.flickr.com/services/rest/";
-var api_key = "6ea02d3c79fe0ece6a497ea8a10db3eb";
-var thumbSize = "url_q";
-var anchorSize = "url_c";
+var THUMBSIZE = "url_q";
+var ANCHORSIZE = "url_c";
 
 // state object
-var state = {
-  anchorImage: "",
-  thumbnailsIds: [ ],
-  priorAnchors: [ ]
-};
+// could add randomizeAnchor(): sets anchor = random photo from photoData
+var state = (function generateState() {
+  let anchors = [ ];
+  let photos = { };
 
-var imageData = {
-  "123456": {
-    ownerId: "",
-    title: "",
-    tags: [ ],
-    urlAnchor: "",
-    urlThumb: ""
+  let setAnchor = id => anchors.push(id);
+
+  let anchorId = () => anchors[anchors.length - 1];
+
+  let anchor = () => photos[anchorId()];
+
+  let anchorPhoto = () => photos[anchorId()];
+
+  let tags = () => anchorPhoto().tags;
+
+  let addThumb = id => anchorPhoto().thumbs.push(id);
+
+  let goBack = () => {
+    if (canGoBack()) {
+      anchors.pop();
+    }
+  };
+
+  let canGoBack = () => anchors.length > 1;
+
+  let isAThumb = id => anchor().thumbs.indexOf(id) >= 0;
+
+  let isUniqueId = id => !(id === anchorId() || isAThumb(id));
+
+  let isUnique = photo => isUniqueId(photo.id);
+
+  let addPhoto = photo => {
+    if (!photos[photo.id]) {
+      photos[photo.id] = {
+        owner: photo.owner,
+        title: photo.title,
+        views: Number(photo.views),
+        tags: photo.tags.split(" "),
+        urlAnchor: photo[ANCHORSIZE],
+        urlThumb: photo[THUMBSIZE],
+        thumbs: [ ]
+      };
+    }
   }
-};
+
+  let thumbId = () => anchor().thumbs[anchor().thumbs.length - 1];
+
+  let thumbUrl = () => photos[thumbId()].urlThumb;
+
+  let anchorUrl = () => photos[anchorId()].urlAnchor;
+
+  return {
+    tags,
+    setAnchor,
+    addThumb,
+    goBack,
+    canGoBack,
+    isUnique,
+    addPhoto,
+    thumbUrl,
+    thumbId,
+    anchorUrl
+  };
+}());
 
 // functions that modify state
 
-function saveCurrentAnchorImg (apiData) {
-  // grabs a random photo based on # of photos returned
+function getRandomAnchor(apiData) {
   var rand = Math.ceil(Math.random() * apiData.photos.photo.length);
-
   var photo = apiData.photos.photo[rand];
-  state.anchorImage = photo.id;
 
-  if (imageData[photo.id]) {
-    return; // image already in DB
-  }
-
-  imageData[photo.id] = {
-    ownerId: photo.owner,
-    title: photo.title,
-    tags: photo.tags.split(" "),
-    urlAnchor: photo[anchorSize],
-    urlThumb: photo[thumbSize]
-  };
-  console.log(imageData);
-  console.log(state);
-
-
-  getApiSearchTag(saveThumbIds);
-
+  state.addPhoto(photo);
+  state.setAnchor(photo.id);
+  renderAnchor();
+  getNewThumbs(newThumb);
 }
 
-// Solution 1: When displaying an image, ensure it is not the same ID as our primary image. If so, use the next one in line.
-//
+function newThumb(apiData) {
+  var photo = apiData.photos.photo.find(state.isUnique);
 
-function saveThumbIds(apiData) {
-  // console.log(apiData);
-
-  var photo = apiData.photos.photo[0];
-
-  if (imageData[photo.id]) {
-    photo = apiData.photos.photo[1];
+  if (photo) {
+    state.addPhoto(photo);
+    state.addThumb(photo.id);
+    renderLatestThumb();
   }
-
-  state.thumbnailsIds.push(photo.id);
-
-  imageData[photo.id] = {
-    ownerId: photo.owner,
-    title: photo.title,
-    tags: photo.tags.split(" "),
-    urlAnchor: photo[anchorSize],
-    urlThumb: photo[thumbSize]
-  };
-
-
-  if (state.thumbnailsIds.length === 3) {
-      displayImagesOnPage(state);
-  }
-
 }
 
 //API calls
-var apiExtras = "tags,views," + thumbSize + "," + anchorSize;
-var apiInterestingness = "flickr.interestingness.getList";
-var apiSearch = "flickr.photos.search";
 
-function getApiInterestingness(callback) {
-  var query = {
-    method: apiInterestingness,
-    extras: apiExtras,    // save an extra API call
-    format: 'json',
-    api_key: api_key,
-    per_page: 10,  // grab a random 1 of all returned
-    nojsoncallback: 1
-  };
-
-  $.getJSON(baseUrl, query, callback); // .done(cb)
-
-  // code from Chris re: future approach:
-  //$.getJSON(baseUrl, query).done(callback).done(displayAnchorImage);
-}
-
-function getApiSearchTag(callback) {
-  var query = {
-    method: apiSearch,
-    api_key: api_key,
-    extras: apiExtras,
-    sort: 'interestingness-desc',
-    media: 'photos',
-    content_type: 1,
+var flickr = (function flickrApi() {
+  var url = "https://api.flickr.com/services/rest/";
+  var base = {
+    api_key: "6ea02d3c79fe0ece6a497ea8a10db3eb",
+    extras: ["tags", "views", THUMBSIZE, ANCHORSIZE].join(","),
     format: 'json',
     nojsoncallback: 1,
-    per_page: 10
   };
 
-  // Gather our related images.
-  // We have: our anchor image.
-  // We want: three unique tags from the anchor image.
-  //   And we want to skip tags that only return one image.
-  // In order to: Get related images for each tag.
-  //   And filter out any images that are the same as our anchor image.
-  //   And store the remaining images in state and image data object.
+  let generateQuery = options => Object.assign({}, base, options);
 
-  // var anchorImage;
-  // var tags = extractTags(anchorImage)
-  // var relatedImages = getRelatedImagesFromTags(tags)
-  // state.imageIds = relatedImages.ids
-
-  // when state.thumbnailsIds has 3 IDs we are done here...
-  // also need to stop if we run out of tags (unlikely)
-  for (var i = 0; i < 6 && i < imageData[state.anchorImage].tags.length; i++) {
-    query.tags = imageData[state.anchorImage].tags[i];
-    console.log(query.tags);
-    $.getJSON(baseUrl, query, callback);
+  function interestingness(count) {
+    return generateQuery({
+      method: "flickr.interestingness.getList",
+      per_page: count || 10
+    });
   }
+
+  function search(count, sort) {
+    return generateQuery({
+      method: "flickr.photos.search",
+      sort: sort || 'relevance',
+      media: 'photos',
+      content_type: 1,
+      per_page: count || 10
+    });
+  }
+
+  return {
+    url,
+    interestingness,
+    search
+  };
+}());
+
+function getNewAnchor(callback) {
+
+  $.getJSON(flickr.url, flickr.interestingness(), callback);
+
+}
+
+function getNewThumbs(callback) {
+
+  var query = flickr.search();
+  var tags = state.tags();
+
+  tags.forEach(tag => {
+    console.info(tag);
+
+    query.tags = tag;
+
+    $.getJSON(flickr.url, query, callback);
+  });
 
 }
 
 // functions that render state
-function displayImagesOnPage(state) {
-    var anchorUrl = imageData[state.anchorImage].urlAnchor;
-    $('.js-anchor-image > img').attr('src', anchorUrl);
-    $('.js-thumbnails').empty();
-    state.thumbnailsIds.forEach(function(id) {
-      var thumbnailUrl = imageData[id].urlThumb;
-      var results = '<li><img class="thumbnails" id="'+ id +'" src="' + thumbnailUrl + '"/></li>';
-      $('.js-thumbnails').append(results);
-  });
 
+function renderAnchor() {
+
+  $('.js-thumbnails').empty();
+  $('.js-anchor-image > img').attr('src', state.anchorUrl());
 
 }
 
+function renderLatestThumb() {
 
+  var results = '<li><img class="thumbnails" id="'+ state.thumbId() +
+    '" src="' + state.thumbUrl() + '"/></li>';
+  $('.js-thumbnails').append(results);
 
-
-//   var resultElement = '';
-//   if (data.Search) {
-//     data.Search.forEach(function(item) {
-//      resultElement += '<p>' + item.Title + '</p>';
-//     });
-//   }
-//   else {
-//     resultElement += '<p>No results</p>';
-//   }
-
-//   $('.js-search-results').html(resultElement);
-// }
-
-
-  // function that gets anchor photo info and posts to page
-  // function that gets thumbnail info and posts to page
-  // function allowing clicking on camera icon to grab photog photos
+}
 
 $(function() {
-  getApiInterestingness(saveCurrentAnchorImg);
+
+  getNewAnchor(getRandomAnchor);
 
 });
+
 // events
 
- $('.js-enter-button').on('click', function(event) {
-    $('.intro-page').addClass('hidden');
-    $('.js-anchor-image').removeClass('hidden');
-    $('.js-thumbnails').removeClass('hidden');
-    $('.camera').removeClass('hidden');
- })
+// finish intro page
+$('.js-enter-button').on('click', function enterSite(event) {
+  $('.intro-page').addClass('hidden');
+  $('.js-anchor-image').removeClass('hidden');
+  $('.js-thumbnails').removeClass('hidden');
+  $('.fa').removeClass('hidden');
+});
+
+// click on a thumb
+$('.js-thumbnails').on('click', 'img', function thumbClick(event) {
+  state.setAnchor($(event.target).attr('id'));
+  renderAnchor();
+  getNewThumbs(newThumb);
+});
+
+// go back one anchor
+$('i#back').click(function backClick(event) {
+  console.log('back it up...');
+  if (state.canGoBack()) {
+    state.goBack();
+    renderAnchor();
+  }
+});
+
+// enable hover response if canGoBack()
 
 
-$('.js-thumbnails').on('click', 'img', function (event) {
-    var id = $(this).attr('id'); 
-    state.anchorImage = id; 
-    state.thumbnailsIds = []; 
-    getApiSearchTag(saveThumbIds);
+// add to favorites button
 
-  });
 
-  // listen for clicks on anchor photo
-  // listen for clicks on camera icon
-  // listen for clicks on thumbnails (1-3...)
-  // listen for mouseover on icons (might be multiple)
-  // listen for back button
+// view favorites button
