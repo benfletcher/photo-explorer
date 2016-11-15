@@ -18,54 +18,36 @@ var ANCHORSIZE = "url_c";
 // state object
 // could add randomizeAnchor(): sets anchor = random photo from photoData
 var state = (function generateState() {
-  var anchors = [ ];
-  var thumbs = [ ];
-  var photos = { };
+  let anchors = [ ];
+  let photos = { };
 
-  function setAnchor(id) {
-    if (id !== anchor()) {
-      anchors.push(id);
-      resetThumbs();
+  let setAnchor = id => anchors.push(id);
+
+  let anchorId = () => anchors[anchors.length - 1];
+
+  let anchor = () => photos[anchorId()];
+
+  let anchorPhoto = () => photos[anchorId()];
+
+  let tags = () => anchorPhoto().tags;
+
+  let addThumb = id => anchorPhoto().thumbs.push(id);
+
+  let goBack = () => {
+    if (canGoBack()) {
+      anchors.pop();
     }
-  }
+  };
 
-  function anchor() {
-    return anchors[anchors.length - 1];
-  }
+  let canGoBack = () => anchors.length > 1;
 
-  function tags() {
-    return photos[anchor()].tags;
-  }
+  let isAThumb = id => anchor().thumbs.indexOf(id) >= 0;
 
-  function addThumb(id) {
-    thumbs.push(id);
-  }
+  let isUniqueId = id => !(id === anchorId() || isAThumb(id));
 
-  function resetThumbs() {
-    thumbs = [ ];
-  }
+  let isUnique = photo => isUniqueId(photo.id);
 
-  function goBack() {
-    if (anchors.length > 1) {
-      anchorHistory.pop();
-      renderNewAnchor();
-      resetThumbs();
-    }
-  }
-
-  function canGoBack() {
-    return anchors.length > 1;
-  }
-
-  function isUniqueId(id) {
-    return !(id === anchor() || ~thumbs.indexOf(id));
-  }
-
-  function isUnique(photo) {
-    return isUniqueId(photo.id);
-  }
-
-  function addPhoto(photo) {
+  let addPhoto = photo => {
     if (!photos[photo.id]) {
       photos[photo.id] = {
         owner: photo.owner,
@@ -73,27 +55,19 @@ var state = (function generateState() {
         views: Number(photo.views),
         tags: photo.tags.split(" "),
         urlAnchor: photo[ANCHORSIZE],
-        urlThumb: photo[THUMBSIZE]
+        urlThumb: photo[THUMBSIZE],
+        thumbs: [ ]
       };
     }
   }
 
-  function thumbId() {
-    return thumbs[thumbs.length - 1];
-  }
+  let thumbId = () => anchor().thumbs[anchor().thumbs.length - 1];
 
-  function thumbUrl(id) {
-    id = id || thumbs[thumbs.length - 1];
-    return photos[id].urlThumb;
-  }
+  let thumbUrl = () => photos[thumbId()].urlThumb;
 
-  function anchorUrl() {
-    return photos[anchor()].urlAnchor;
-  }
+  let anchorUrl = () => photos[anchorId()].urlAnchor;
 
   return {
-    thumbs,
-    anchor,
     tags,
     setAnchor,
     addThumb,
@@ -115,7 +89,7 @@ function getRandomAnchor(apiData) {
 
   state.addPhoto(photo);
   state.setAnchor(photo.id);
-  renderNewAnchor();
+  renderAnchor();
   getNewThumbs(newThumb);
 }
 
@@ -133,21 +107,14 @@ function newThumb(apiData) {
 
 var flickr = (function flickrApi() {
   var url = "https://api.flickr.com/services/rest/";
+  var base = {
+    api_key: "6ea02d3c79fe0ece6a497ea8a10db3eb",
+    extras: ["tags", "views", THUMBSIZE, ANCHORSIZE].join(","),
+    format: 'json',
+    nojsoncallback: 1,
+  };
 
-  function generateQuery(options) {
-    var base = {
-      api_key: "6ea02d3c79fe0ece6a497ea8a10db3eb",
-      extras: ["tags", "views", THUMBSIZE, ANCHORSIZE].join(","),
-      format: 'json',
-      nojsoncallback: 1,
-    };
-
-    for (var key in options) {
-      base[key] = options[key];
-    }
-
-    return base;
-  }
+  let generateQuery = options => Object.assign({}, base, options);
 
   function interestingness(count) {
     return generateQuery({
@@ -174,38 +141,47 @@ var flickr = (function flickrApi() {
 }());
 
 function getNewAnchor(callback) {
+
   $.getJSON(flickr.url, flickr.interestingness(), callback);
+
 }
 
 function getNewThumbs(callback) {
+
   var query = flickr.search();
   var tags = state.tags();
 
-  tags.forEach(function forEachTag(tag) {
-    console.log(tag);
+  tags.forEach(tag => {
+    console.info(tag);
+
     query.tags = tag;
+
     $.getJSON(flickr.url, query, callback);
   });
+
 }
 
 // functions that render state
-function renderNewAnchor() {
+
+function renderAnchor() {
+
   $('.js-thumbnails').empty();
   $('.js-anchor-image > img').attr('src', state.anchorUrl());
+
 }
 
 function renderLatestThumb() {
+
   var results = '<li><img class="thumbnails" id="'+ state.thumbId() +
     '" src="' + state.thumbUrl() + '"/></li>';
   $('.js-thumbnails').append(results);
-}
-
-function renderRemoveThumbs() {
 
 }
 
 $(function() {
+
   getNewAnchor(getRandomAnchor);
+
 });
 
 // events
@@ -216,21 +192,28 @@ $('.js-enter-button').on('click', function enterSite(event) {
   $('.js-anchor-image').removeClass('hidden');
   $('.js-thumbnails').removeClass('hidden');
   $('.fa').removeClass('hidden');
-})
+});
 
 // click on a thumb
 $('.js-thumbnails').on('click', 'img', function thumbClick(event) {
   state.setAnchor($(event.target).attr('id'));
-  renderNewAnchor();
+  renderAnchor();
   getNewThumbs(newThumb);
 });
 
-$('#back').click(function backClick(event) {
+// go back one anchor
+$('i#back').click(function backClick(event) {
+  console.log('back it up...');
   if (state.canGoBack()) {
     state.goBack();
-
+    renderAnchor();
   }
 });
 
-// listener on back icon
 // enable hover response if canGoBack()
+
+
+// add to favorites button
+
+
+// view favorites button
