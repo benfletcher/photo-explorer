@@ -90,7 +90,6 @@ function getRandomAnchor(apiData) {
   state.addPhoto(photo);
   state.setAnchor(photo.id);
   renderAnchor();
-  getNewThumbs(newThumb);
 }
 
 function newThumb(apiData) {
@@ -179,6 +178,8 @@ function renderLatestThumb() {
 }
 
 $(function() {
+
+  $('img.anchor').on('load', () => getNewThumbs(newThumb));
 
   getNewAnchor(getRandomAnchor);
 
